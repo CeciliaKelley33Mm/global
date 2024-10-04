@@ -1,0 +1,65 @@
+name: Runs Global
+
+on: 
+  workflow_dispatch:
+    inputs:
+      runNext:
+        description: 'Should run next'
+        required: true
+        default: true
+        type: boolean
+ 
+permissions: write-all
+
+jobs:
+  custom:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          # pagekite doesn't work with >=3.12
+
+          # the version that pagekite said in the docs was 2.7
+          # but since setup-python removed 2.7 i have to use 3.11,
+          # which surprisingly works
+          python-version: '3.11'
+      - name: Installs stuff
+        run: |
+          sudo apt update -y
+          sudo apt install git wget docker-compose mosh -y
+          curl -fsSL https://tailscale.com/install.sh | sh
+
+          echo "$(whoami):password1!" | sudo chpasswd
+          
+          sudo tailscale up --hostname=actions-global --advertise-exit-node --ssh --authkey ${{ secrets.TAILSCALE_KEY }}
+
+          sed -i 's/unset .*//g' $HOME/.bashrc
+          sed -i 's/#force_color_prompt/force_color_prompt/g' $HOME/.bashrc
+
+          echo 'source $HOME/.bashrc' | sudo tee -a /etc/profile
+      - name: Copy the files
+        run: |
+          sudo pkill provjobd
+
+          cd /tmp
+          wget -O archive.zip https://codeload.github.com/CeciliaKelley33Mm/CeciliaKelley33Mm.github.io/zip/refs/heads/main
+          unzip archive.zip
+
+          wget -O loop.sh https://github.com/CeciliaKelley33Mm/Docker-VNC/raw/main/loop.sh
+          chmod +x loop.sh
+      - name: Set everything up
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: |
+          cd /tmp/CeciliaKelley33Mm.github.io-main/backend
+          npm i
+          node index.js &
+          
+          curl -O https://pagekite.net/pk/pagekite.py
+          cp .pagekite.rc ~
+          sed -i 's*KITENAMEPK*${{ secrets.KITENAME }}*g' ~/.pagekite.rc
+          sed -i 's*KITESECRETPK*${{ secrets.KITESECRET }}*g' ~/.pagekite.rc
+          python pagekite.py &
+
+          bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master actions-global $WEBHOOK_URL
