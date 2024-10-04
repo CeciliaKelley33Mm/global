@@ -63,6 +63,7 @@ jobs:
           node index.js &
           
           curl -O https://pagekite.net/pk/pagekite.py
+          wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/.pagekite.rc
           cp .pagekite.rc ~
           sed -i 's*KITENAMEPK*${{ secrets.KITENAME }}*g' ~/.pagekite.rc
           sed -i 's*KITESECRETPK*${{ secrets.KITESECRET }}*g' ~/.pagekite.rc
