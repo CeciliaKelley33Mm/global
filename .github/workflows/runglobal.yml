@@ -31,7 +31,7 @@ jobs:
 
           echo "$(whoami):password1!" | sudo chpasswd
           
-          sudo tailscale up --hostname=actions-global --advertise-exit-node --ssh --authkey ${{ secrets.TAILSCALE_KEY }}
+          sudo tailscale up --hostname=global --advertise-exit-node --ssh --authkey ${{ secrets.TAILSCALE_KEY }}
 
           sed -i 's/unset .*//g' $HOME/.bashrc
           sed -i 's/#force_color_prompt/force_color_prompt/g' $HOME/.bashrc
@@ -70,4 +70,4 @@ jobs:
 
           wget -O loop.sh https://github.com/CeciliaKelley33Mm/Docker-VNC/raw/main/loop.sh
           chmod +x loop.sh
-          bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master actions-global $WEBHOOK_URL
+          bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master global $WEBHOOK_URL
