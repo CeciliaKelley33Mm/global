@@ -44,9 +44,6 @@ jobs:
           cd /tmp
           wget -O archive.zip https://codeload.github.com/CeciliaKelley33Mm/CeciliaKelley33Mm.github.io/zip/refs/heads/main
           unzip archive.zip
-
-          wget -O loop.sh https://github.com/CeciliaKelley33Mm/Docker-VNC/raw/main/loop.sh
-          chmod +x loop.sh
       - name: Set everything up
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -62,4 +59,6 @@ jobs:
           sed -i 's*KITESECRETPK*${{ secrets.KITESECRET }}*g' ~/.pagekite.rc
           python pagekite.py &
 
+          wget -O loop.sh https://github.com/CeciliaKelley33Mm/Docker-VNC/raw/main/loop.sh
+          chmod +x loop.sh
           bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master actions-global $WEBHOOK_URL
