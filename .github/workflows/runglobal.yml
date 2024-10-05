@@ -53,11 +53,16 @@ jobs:
         run: |
           mkdir /tmp/muse
           cd /tmp/muse
-          wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/docker-compose.yml
+          wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/muse-compose.yml
           sed -i 's/DISCORD_TOKEN_PLACEHOLDER/${{ secrets.DISCORD_TOKEN }}/g' docker-compose.yml
           sed -i 's/YOUTUBE_API_KEY_PLACEHOLDER/${{ secrets.YOUTUBE_API_KEY }}/g' docker-compose.yml
           sed -i 's/SPOTIFY_CLIENT_ID_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_ID }}/g' docker-compose.yml
           sed -i 's/SPOTIFY_CLIENT_SECRET_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_SECRET }}/g' docker-compose.yml
+          docker compose up -d &
+
+          mkdir /tmp/minecraft
+          cd /tmp/minecraft
+          wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
           docker compose up -d &
 
           cd /tmp/CeciliaKelley33Mm.github.io-main/backend

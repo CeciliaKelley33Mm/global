@@ -1,0 +1,34 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    tty: true
+    stdin_open: true
+    ports:
+      - "25565:25565"
+    environment:
+      TZ: "America/Los_Angeles"
+
+      EULA: "TRUE"
+      INIT_MEMORY: "4G"
+      MAX_MEMORY: "14G"
+      USE_AIKAR_FLAGS: "true"
+
+      TYPE: "paper"
+
+      MOTD: "§dA Minecraft Server hosted on GitHub Actions :D"
+      ONLINE_MODE: "false"
+      DIFFICULTY: "peaceful"
+      MAX_PLAYERS: "100"
+      ENABLE_COMMAND_BLOCK: "true"
+      MODE: "creative"
+      ALLOW_FLIGHT: "true"
+
+      RCON_PASSWORD: "minecraft" # totally secure password wow
+
+      PLUGINS: |
+        https://github.com/EssentialsX/Essentials/releases/download/2.20.1/EssentialsX-2.20.1.jar
+        https://hangarcdn.papermc.io/plugins/ViaVersion/ViaBackwards/versions/5.0.3/PAPER/ViaBackwards-5.0.3.jar
+        https://cdn.modrinth.com/data/fRQREgAc/versions/AdtrWcU2/Dynmap-3.7-beta-7-spigot.jar
+      SPIGET_RESOURCES: "19254,52109" # viaversion, viarewind
+    volumes:
+      - ./data:/data
