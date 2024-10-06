@@ -73,7 +73,7 @@ jobs:
 
             cd /tmp
 
-            aria2c -x 16 -j 16 -s 16 http://$OLD_TAILSCALE_HOSTNAME:5000/archive.tar.gz
+            aria2c -x 16 -j 16 -s 16 http://${{ inputs.oldTailscaleHostname }}:5000/archive.tar.gz
 
             tar xf archive.tar.gz
 
