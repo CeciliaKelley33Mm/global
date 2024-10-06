@@ -79,7 +79,7 @@ jobs:
 
             cd minecraft
           else
-            echo DEBUG: old tailsale hostname doesn't exist, making minecraft
+            echo DEBUG: old tailsale hostname no exist, making minecraft
 
             mkdir /tmp/minecraft
             cd /tmp/minecraft
