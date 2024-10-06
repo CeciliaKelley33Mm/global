@@ -65,7 +65,7 @@ jobs:
           sed -i 's/SPOTIFY_CLIENT_SECRET_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_SECRET }}/g' docker-compose.yml
           docker compose up -d &
 
-          if [ "${{ inputs.oldTailscaleHostname }}" != "" ] then
+          if [ "${{ inputs.oldTailscaleHostname }}" != "" ]; then
             echo DEBUG: old tailscale hostname is not empty
             echo it is AA${{ inputs.oldTailscaleHostname }}AA
 
