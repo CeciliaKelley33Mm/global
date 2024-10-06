@@ -66,9 +66,6 @@ jobs:
           docker compose up -d &
 
           if [ "${{ inputs.oldTailscaleHostname }}" != "" ]; then
-            echo DEBUG: old tailscale hostname is not empty
-            echo it is AA${{ inputs.oldTailscaleHostname }}AA
-
             npm install -g serve
 
             cd /tmp
@@ -79,8 +76,6 @@ jobs:
 
             cd minecraft
           else
-            echo DEBUG: old tailsale hostname no exist, making minecraft
-
             mkdir /tmp/minecraft
             cd /tmp/minecraft
             wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
