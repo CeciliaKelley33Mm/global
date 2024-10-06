@@ -102,8 +102,8 @@ check() {
         command+="\"/repos/CeciliaKelley33Mm/$REPO/actions/workflows/$WORKFLOW_FILE/dispatches\" "
         command+="-f \"ref=$BRANCH\" -f \"inputs[runNext]=true\" "
 
-        if [ "$IS_GLOBAL" == "true" ] && [ "$OLD_TAILSCALE_HOSTNAME" != "" ]; then
-            command+="-f \"inputs[oldTailscaleHostname]=$OLD_TAILSCALE_HOSTNAME\""
+        if [[ "$IS_GLOBAL" == "true" ]]; then
+            command+="-f \"inputs[oldTailscaleHostname]=$hostname\""
         
             cd /tmp
 
