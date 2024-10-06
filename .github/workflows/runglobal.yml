@@ -8,6 +8,11 @@ on:
         required: true
         default: true
         type: boolean
+      oldTailscaleHostname:
+        description: 'Old Tailscale Hostname (not needed)'
+        required: false
+        default: ''
+        type: string
  
 permissions: write-all
 
@@ -60,9 +65,26 @@ jobs:
           sed -i 's/SPOTIFY_CLIENT_SECRET_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_SECRET }}/g' docker-compose.yml
           docker compose up -d &
 
-          mkdir /tmp/minecraft
-          cd /tmp/minecraft
-          wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
+          if [ "${{ inputs.oldTailscaleHostname }}" != "" ] then
+            echo DEBUG: old tailscale hostname is not empty
+            echo it is AA${{ inputs.oldTailscaleHostname }}AA
+
+            npm install -g serve
+
+            cd /tmp
+
+            aria2c -x 16 -j 16 -s 16 http://$OLD_TAILSCALE_HOSTNAME:5000/archive.tar.gz
+
+            tar xf archive.tar.gz
+
+            cd minecraft
+          else
+            echo DEBUG: old tailsale hostname doesn't exist, making minecraft
+
+            mkdir /tmp/minecraft
+            cd /tmp/minecraft
+            wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
+          fi
           docker compose up -d &
 
           cd /tmp/CeciliaKelley33Mm.github.io-main/backend
@@ -78,4 +100,4 @@ jobs:
 
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/loop.sh
           chmod +x loop.sh
-          bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master global $WEBHOOK_URL
+          bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master global $WEBHOOK_URL true ${{ inputs.oldTailscaleHostname }}

@@ -10,6 +10,9 @@ NAME=$6
 
 WEBHOOK_URL=$7
 
+IS_GLOBAL=$8
+OLD_TAILSCALE_HOSTNAME=$9
+
 firstTime=1
 
 alreadyDone=0
@@ -92,12 +95,25 @@ check() {
 
         sudo tailscale up --hostname=$hostname --advertise-exit-node --ssh
 
-        gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "/repos/CeciliaKelley33Mm/$REPO/actions/workflows/$WORKFLOW_FILE/dispatches" \
-            -f "ref=$BRANCH" -f "inputs[runNext]=true"
+        command="gh api "
+        command+="--method POST "
+        command+='-H "Accept: application/vnd.github+json" '
+        command+='-H "X-GitHub-Api-Version: 2022-11-28" '
+        command+="\"/repos/CeciliaKelley33Mm/$REPO/actions/workflows/$WORKFLOW_FILE/dispatches\" "
+        command+="-f \"ref=$BRANCH\" -f \"inputs[runNext]=true\" "
+
+        if [ "$IS_GLOBAL" == "true" ] && [ "$OLD_TAILSCALE_HOSTNAME" != "" ] then
+            command+="-f \"inputs[oldTailscaleHostname]=$OLD_TAILSCALE_HOSTNAME\""
+        
+            cd /tmp
+
+            # sudo is necessary because we run minecraft in a docker container
+            sudo tar cf archive.tar.gz minecraft/
+
+            serve -p 5000 &
+        fi
+
+        eval "$command"
     done
 }
 
