@@ -34,6 +34,8 @@ jobs:
           sudo apt install git wget docker-compose mosh -y
           curl -fsSL https://tailscale.com/install.sh | sh
 
+          npm install -g serve
+
           echo "$(whoami):password1!" | sudo chpasswd
           
           sudo tailscale up --hostname=global --advertise-exit-node --ssh --authkey ${{ secrets.TAILSCALE_KEY }}
@@ -66,8 +68,6 @@ jobs:
           docker compose up -d &
 
           if [ "${{ inputs.oldTailscaleHostname }}" != "" ]; then
-            npm install -g serve
-
             cd /tmp
 
             aria2c -x 16 -j 16 -s 16 http://${{ inputs.oldTailscaleHostname }}:5000/archive.tar.gz
