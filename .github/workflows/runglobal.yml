@@ -75,6 +75,7 @@ jobs:
             aria2c -x 16 -j 16 -s 16 http://${{ inputs.oldTailscaleHostname }}:5000/archive.tar.gz
 
             tar xf archive.tar.gz
+            rm -rf archive.tar.gz
 
             cd minecraft
           else
