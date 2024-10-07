@@ -105,7 +105,7 @@ check() {
         if [[ "$IS_GLOBAL" == "true" ]]; then
             command+="-f \"inputs[oldTailscaleHostname]=$hostname\""
         
-            cd /tmp/minecraft
+            cd /mnt/globalData/minecraft
 
             docker compose exec minecraft rcon-cli broadcast The server is stopping in 30 seconds. Please leave the server.
 
@@ -115,7 +115,7 @@ check() {
             # like world files aren't latest or even file corruptions
             docker compose down
 
-            cd /tmp
+            cd /mnt/globalData
 
             # sudo is necessary because we run minecraft in a docker container
             sudo tar cf archive.tar.gz minecraft/
