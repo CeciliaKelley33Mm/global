@@ -30,6 +30,7 @@ services:
         https://github.com/EssentialsX/Essentials/releases/download/2.20.1/EssentialsX-2.20.1.jar
         https://hangarcdn.papermc.io/plugins/ViaVersion/ViaBackwards/versions/5.0.3/PAPER/ViaBackwards-5.0.3.jar
         https://cdn.modrinth.com/data/fRQREgAc/versions/AdtrWcU2/Dynmap-3.7-beta-7-spigot.jar
+        https://ci.athion.net/job/FastAsyncWorldEdit/lastSuccessfulBuild/artifact/artifacts/FastAsyncWorldEdit-Bukkit-2.11.3-SNAPSHOT-934.jar
       SPIGET_RESOURCES: "19254,52109" # viaversion, viarewind
     volumes:
       - ./data:/data
