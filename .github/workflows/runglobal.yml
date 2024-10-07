@@ -18,7 +18,7 @@ permissions: write-all
 
 jobs:
   custom:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-python@v5
         with:
