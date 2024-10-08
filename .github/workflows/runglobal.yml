@@ -49,7 +49,7 @@ jobs:
           sudo pkill provjobd
 
           sudo mkdir /mnt/globalData
-          sudo chown $(whoami) globalData/
+          sudo chown $(whoami) /mnt/globalData/
 
           cd /mnt/globalData
 
