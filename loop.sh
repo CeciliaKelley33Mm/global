@@ -107,9 +107,17 @@ check() {
         
             cd /mnt/globalData/minecraft
 
-            docker compose exec minecraft rcon-cli broadcast The server is stopping in 30 seconds. Please leave the server.
+            timeLeft=30
 
-            sleep 30
+            while [ $timeLeft -gt 0 ]; do
+                if [ $(($timeLeft % 10)) -eq 0 ]; then
+                    docker compose exec minecraft rcon-cli broadcast The server is stopping in $timeLeft seconds. Please leave the server.
+                fi
+                
+                sleep 1
+
+                timeLeft=$((timeLeft - 1))
+            done
 
             # not stopping the server would cause problems
             # like world files aren't latest or even file corruptions
