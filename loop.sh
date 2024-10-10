@@ -105,7 +105,7 @@ check() {
         if [[ "$IS_GLOBAL" == "true" ]]; then
             command+="-f \"inputs[oldTailscaleHostname]=$hostname\""
         
-            cd /mnt/globalData/minecraft
+            cd /mnt/globalData/toBackup/minecraft
 
             timeLeft=30
 
@@ -120,13 +120,14 @@ check() {
             done
 
             # not stopping the server would cause problems
-            # like world files aren't latest or even file corruptions
+            # like new world files not getting written
+            # or even file corruptions
             docker compose down
 
             cd /mnt/globalData
 
             # sudo is necessary because we run minecraft in a docker container
-            sudo tar cf archive.tar.gz minecraft/
+            sudo tar cf archive.tar.gz toBackup/
 
             serve -p 5000 &
         fi

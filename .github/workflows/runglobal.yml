@@ -83,10 +83,10 @@ jobs:
             tar xf archive.tar.gz
             rm -rf archive.tar.gz
 
-            cd minecraft
+            cd toBackup/minecraft
           else
-            mkdir /mnt/globalData/minecraft
-            cd /mnt/globalData/minecraft
+            mkdir -p /mnt/globalData/toBackup/minecraft
+            cd /mnt/globalData/toBackup/minecraft
             wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
           fi
           docker compose up -d &
