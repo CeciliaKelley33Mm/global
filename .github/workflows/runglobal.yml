@@ -16,55 +16,58 @@ on:
  
 permissions: write-all
 
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+  CHANGE_COMMAND_USERNAME: ${{ secrets.CHANGE_COMMAND_USERNAME }}
+  CHANGE_COMMAND_PASSWORD: ${{ secrets.CHANGE_COMMAND_PASSWORD }}
+
 jobs:
   custom:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v5
+      - name: Setup Python (for use with Pool Kit)
+        uses: actions/setup-python@v5
         with:
           # pagekite doesn't work with >=3.12
 
           # the version that pagekite said in the docs was 2.7
-          # but since setup-python removed 2.7 i have to use 3.11,
+          # but since setup-python removed 2.7 i had to use 3.11,
           # which surprisingly works
           python-version: '3.11'
-      - name: Installs stuff
+      - name: Installs some stuff
         run: |
           sudo apt update -y
           sudo apt install git wget docker-compose mosh -y
           curl -fsSL https://tailscale.com/install.sh | sh
 
           npm install -g serve
-
-          echo "$(whoami):password1!" | sudo chpasswd
-          
-          sudo tailscale up --hostname=global --advertise-exit-node --ssh --authkey ${{ secrets.TAILSCALE_KEY }}
-
+      - name: Change Rabbit Word
+        run: echo "$(whoami):password1!" | sudo chpasswd
+      - name: Start Mooming on a Scale
+        run: sudo tailscale up --hostname="$(if ${{ inputs.runNext }}; then echo global; else echo manual-global-$(TZ=Asia/Tokyo date +%H-%M-%S); fi)" --advertise-exit-node --ssh --authkey ${{ secrets.TAILSCALE_KEY }}
+      - name: Fix the PS having no colors
+        run: |
           sed -i 's/unset .*//g' $HOME/.bashrc
           sed -i 's/#force_color_prompt/force_color_prompt/g' $HOME/.bashrc
-
           echo 'source $HOME/.bashrc' | sudo tee -a /etc/profile
-      - name: Copy the files
+      - name: Kill something :D
+        run: sudo pkill provjobd
+      - name: Create the global data directory
         run: |
-          sudo pkill provjobd
-
           sudo mkdir /mnt/globalData
           sudo chown $(whoami) /mnt/globalData/
-
-          cd /mnt/globalData
-
+      - name: Clone the website repo to run the backend server
+        working-directory: /mnt/globalData
+        run: |
           wget -O archive.zip https://codeload.github.com/CeciliaKelley33Mm/CeciliaKelley33Mm.github.io/zip/refs/heads/main
           unzip archive.zip
-
           rm -rf archive.zip
-      - name: Set everything up
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
-          CHANGE_COMMAND_USERNAME: ${{ secrets.CHANGE_COMMAND_USERNAME }}
-          CHANGE_COMMAND_PASSWORD: ${{ secrets.CHANGE_COMMAND_PASSWORD }}
+      - name: Add GitHub token to the home directory (useful for debugging purposes)
+        run: echo "$GH_TOKEN" > ~/gh_token.txt
+      - name: Set everything up. I wonder when GitHub will add parallel steps
         run: |
-          echo "$GH_TOKEN" > ~/gh_token.txt
+          echo '====== Setting up MUSE ======\n'
 
           mkdir /mnt/globalData/muse
           cd /mnt/globalData/muse
@@ -73,8 +76,13 @@ jobs:
           sed -i 's/YOUTUBE_API_KEY_PLACEHOLDER/${{ secrets.YOUTUBE_API_KEY }}/g' docker-compose.yml
           sed -i 's/SPOTIFY_CLIENT_ID_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_ID }}/g' docker-compose.yml
           sed -i 's/SPOTIFY_CLIENT_SECRET_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_SECRET }}/g' docker-compose.yml
-          docker compose up -d &
+          docker compose up -d >/dev/null 2>&1 &
 
+          echo '\n====== Setting up Minecraft Server ======\n'
+
+          # TODO: we should move this to a separate step since
+          #       it would be a mess if we have more than
+          #       just minecraft
           if [ "${{ inputs.oldTailscaleHostname }}" != "" ]; then
             cd /mnt/globalData
 
@@ -89,18 +97,24 @@ jobs:
             cd /mnt/globalData/toBackup/minecraft
             wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
           fi
-          docker compose up -d &
+          docker compose up -d >/dev/null 2>&1 &
+
+          echo '\n====== Setting up website backend server ======\n'
 
           cd /mnt/globalData/CeciliaKelley33Mm.github.io-main/backend
           npm i
-          node index.js &
+          node index.js & # theres not too much junk that gets printed out
+
+          echo '\n====== Setting up Pool Kit ======\n'
           
           curl -O https://pagekite.net/pk/pagekite.py
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/.pagekite.rc
           cp .pagekite.rc ~
           sed -i 's*KITENAMEPK*${{ secrets.KITENAME }}*g' ~/.pagekite.rc
           sed -i 's*KITESECRETPK*${{ secrets.KITESECRET }}*g' ~/.pagekite.rc
-          python pagekite.py &
+          python pagekite.py >/dev/null 2>&1 &
+
+          echo '\n====== Setting up and running the long-lived process ======\n'
 
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/loop.sh
           chmod +x loop.sh
