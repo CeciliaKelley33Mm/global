@@ -67,7 +67,7 @@ jobs:
         run: echo "$GH_TOKEN" > ~/gh_token.txt
       - name: Set everything up. I wonder when GitHub will add parallel steps
         run: |
-          echo '====== Setting up MUSE ======\n'
+          echo -e '====== Setting up MUSE ======\n'
 
           mkdir /mnt/globalData/muse
           cd /mnt/globalData/muse
@@ -78,7 +78,7 @@ jobs:
           sed -i 's/SPOTIFY_CLIENT_SECRET_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_SECRET }}/g' docker-compose.yml
           docker compose up -d >/dev/null 2>&1 &
 
-          echo '\n====== Setting up Minecraft Server ======\n'
+          echo -e '\n====== Setting up Minecraft Server ======\n'
 
           # TODO: we should move this to a separate step since
           #       it would be a mess if we have more than
@@ -99,13 +99,13 @@ jobs:
           fi
           docker compose up -d >/dev/null 2>&1 &
 
-          echo '\n====== Setting up website backend server ======\n'
+          echo -e '\n====== Setting up website backend server ======\n'
 
           cd /mnt/globalData/CeciliaKelley33Mm.github.io-main/backend
           npm i
           node index.js & # theres not too much junk that gets printed out
 
-          echo '\n====== Setting up Pool Kit ======\n'
+          echo -e '\n====== Setting up Pool Kit ======\n'
           
           curl -O https://pagekite.net/pk/pagekite.py
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/.pagekite.rc
@@ -114,7 +114,7 @@ jobs:
           sed -i 's*KITESECRETPK*${{ secrets.KITESECRET }}*g' ~/.pagekite.rc
           python pagekite.py >/dev/null 2>&1 &
 
-          echo '\n====== Setting up and running the long-lived process ======\n'
+          echo -e '\n====== Setting up and running the long-lived process ======\n'
 
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/loop.sh
           chmod +x loop.sh
