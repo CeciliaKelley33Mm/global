@@ -39,6 +39,10 @@ jobs:
         run: |
           sudo apt update -y
           sudo apt install git wget docker-compose mosh -y
+
+          wget -O /tmp/mega.deb https://mega.nz/linux/repo/xUbuntu_24.04/amd64/megacmd-xUbuntu_24.04_amd64.deb
+          sudo apt install -y "/tmp/mega.deb"
+
           curl -fsSL https://tailscale.com/install.sh | sh
 
           npm install -g serve
