@@ -1,6 +1,6 @@
 #!/bin/bash
 
-START_TIME=$(date +"%H:%M:%S") # the checkTime.js script uses local time
+START_TIME=$(date +"%H:%M") # the checkTime.js script uses local time
 
 GH_TOKEN=$2
 
