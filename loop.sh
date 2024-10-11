@@ -60,37 +60,7 @@ requestWebhook() {
 }
 
 check() {
-    # currentTime=$(TZ=Etc/UTC date +"%H-%M")
-
-    ### the following pattern is now deprecated. i am now using checkTime.js
-    ### which adds the start time by 5 hours
-
-    # this is the pattern. the old machine will activate the new machine 1 hour before it terminates
-
-    # 1 00:00 RUN
-    # 1 05:50 ACTIVATE 2
-    # 1 06:00 TERMINATE
-
-    # 2 05:50 RUN
-    # 2 10:50 ACTIVATE 3
-    # 2 11:50 TERMINATE
-
-    # 3 10:50 RUN
-    # 3 15:50 ACTIVATE 4
-    # 3 16:50 TERMINATE
-
-    # 4 15:50 RUN
-    # 4 20:50 ACTIVATE 5
-    # 4 21:50 TERMINATE
-
-    # 5 20:50 RUN
-    # 5 00:00 ACTIVATE 1
-    # 5 01:50 TERMINATE
-
-    # targetTimes=("00-00" "05-50" "10-50" "15-50" "20-50")
-
-    # for target in "${targetTimes[@]}"; do
-    #     if [[ "$currentTime" != "$target" ]]; then continue; fi
+    # checkTime.js adds the start time by 5 hours
 
     node checkTime.js $START_TIME
     exitCode=$?
@@ -143,8 +113,6 @@ check() {
 
         eval "$command"
     fi
-
-    # done
 }
 
 if [ "$1" == "true" ]; then
