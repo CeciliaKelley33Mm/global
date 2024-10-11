@@ -67,8 +67,10 @@ jobs:
           wget -O archive.zip https://codeload.github.com/CeciliaKelley33Mm/CeciliaKelley33Mm.github.io/zip/refs/heads/main
           unzip archive.zip
           rm -rf archive.zip
-      - name: Add GitHub token to the home directory (useful for debugging purposes)
-        run: echo "$GH_TOKEN" > ~/gh_token.txt
+      - name: Add GitHub token and other environment variables to the home directory (useful for debugging purposes)
+        run: |
+          echo "$GH_TOKEN" > ~/gh_token.txt
+          env >> ~/env.txt
       - name: Set everything up. I wonder when GitHub will add parallel steps
         run: |
           echo -e '====== Setting up MUSE ======\n'
