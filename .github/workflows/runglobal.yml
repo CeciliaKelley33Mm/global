@@ -67,8 +67,11 @@ jobs:
           wget -O archive.zip https://codeload.github.com/CeciliaKelley33Mm/CeciliaKelley33Mm.github.io/zip/refs/heads/main
           unzip archive.zip
           rm -rf archive.zip
-      - name: Add GitHub token and other environment variables to the home directory (useful for debugging purposes)
+      - name: Add GitHub token, GitHub context other environment variables to the home directory (useful for debugging purposes)
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: |
+          echo "$GITHUB_CONTEXT" >> ~/github_context.txt
           echo "$GH_TOKEN" > ~/gh_token.txt
           env >> ~/env.txt
       - name: Set everything up. I wonder when GitHub will add parallel steps
