@@ -1,5 +1,7 @@
 #!/bin/bash
 
+START_TIME=$(date +"%H:%M:%S") # the checkTime.js script uses local time
+
 GH_TOKEN=$2
 
 REPO=$3
@@ -58,7 +60,10 @@ requestWebhook() {
 }
 
 check() {
-    currentTime=$(TZ=Etc/UTC date +"%H-%M")
+    # currentTime=$(TZ=Etc/UTC date +"%H-%M")
+
+    ### the following pattern is now deprecated. i am now using checkTime.js
+    ### which adds the start time by 5 hours
 
     # this is the pattern. the old machine will activate the new machine 1 hour before it terminates
 
@@ -82,11 +87,15 @@ check() {
     # 5 00:00 ACTIVATE 1
     # 5 01:50 TERMINATE
 
-    targetTimes=("00-00" "05-50" "10-50" "15-50" "20-50")
+    # targetTimes=("00-00" "05-50" "10-50" "15-50" "20-50")
 
-    for target in "${targetTimes[@]}"; do
-        if [[ "$currentTime" != "$target" ]]; then continue; fi
+    # for target in "${targetTimes[@]}"; do
+    #     if [[ "$currentTime" != "$target" ]]; then continue; fi
 
+    node checkTime.js $START_TIME
+    exitCode=$?
+
+    if [ $exitCode -eq 0 ]; then
         alreadyDone=1
 
         hostname="old-$NAME-$RANDOM"
@@ -133,7 +142,9 @@ check() {
         fi
 
         eval "$command"
-    done
+    fi
+
+    # done
 }
 
 if [ "$1" == "true" ]; then

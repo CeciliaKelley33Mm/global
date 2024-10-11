@@ -120,6 +120,10 @@ jobs:
 
           echo -e '\n====== Setting up and running the long-lived process ======\n'
 
+          cd /mnt/globalData
+
+          wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/checkTime.js
+
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/loop.sh
           chmod +x loop.sh
           bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master global $WEBHOOK_URL true ${{ inputs.oldTailscaleHostname }}
