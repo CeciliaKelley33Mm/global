@@ -67,68 +67,62 @@ jobs:
           wget -O archive.zip https://codeload.github.com/CeciliaKelley33Mm/CeciliaKelley33Mm.github.io/zip/refs/heads/main
           unzip archive.zip
           rm -rf archive.zip
-      - name: Add GitHub token, GitHub context other environment variables to the home directory (useful for debugging purposes)
+      - name: Dump GitHub token, GitHub context and other environment variables to the home directory (useful for debugging purposes)
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: |
           echo "$GITHUB_CONTEXT" >> ~/github_context.txt
           echo "$GH_TOKEN" > ~/gh_token.txt
           env >> ~/env.txt
-      - name: Set everything up. I wonder when GitHub will add parallel steps
+      - name: Get files from old runtime (if exists)
+        if: ${{ inputs.oldTailscaleHostname != '' }}
         run: |
-          echo -e '====== Setting up MUSE ======\n'
+          cd /mnt/globalData
 
+          aria2c -x 16 -j 16 -s 16 http://${{ inputs.oldTailscaleHostname }}:5000/archive.tar.gz
+
+          tar xf archive.tar.gz
+          rm -rf archive.tar.gz
+      - name: Make new Minecraft Server files if on new runtime
+        if: ${{ inputs.oldTailscaleHostname == '' }}
+        run: |
+          mkdir -p /mnt/globalData/toBackup/minecraft
+          cd /mnt/globalData/toBackup/minecraft
+          wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
+      - name: Start Minecraft Server
+        working-directory: /mnt/globalData/toBackup/minecraft
+        run: docker compose up -d &
+      - name: Setup MUSE
+        run: |
           mkdir /mnt/globalData/muse
           cd /mnt/globalData/muse
+
           wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/muse-compose.yml
           sed -i 's/DISCORD_TOKEN_PLACEHOLDER/${{ secrets.DISCORD_TOKEN }}/g' docker-compose.yml
           sed -i 's/YOUTUBE_API_KEY_PLACEHOLDER/${{ secrets.YOUTUBE_API_KEY }}/g' docker-compose.yml
           sed -i 's/SPOTIFY_CLIENT_ID_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_ID }}/g' docker-compose.yml
           sed -i 's/SPOTIFY_CLIENT_SECRET_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_SECRET }}/g' docker-compose.yml
-          docker compose up -d >/dev/null 2>&1 &
 
-          echo -e '\n====== Setting up Minecraft Server ======\n'
-
-          # TODO: we should move this to a separate step since
-          #       it would be a mess if we have more than
-          #       just minecraft
-          if [ "${{ inputs.oldTailscaleHostname }}" != "" ]; then
-            cd /mnt/globalData
-
-            aria2c -x 16 -j 16 -s 16 http://${{ inputs.oldTailscaleHostname }}:5000/archive.tar.gz
-
-            tar xf archive.tar.gz
-            rm -rf archive.tar.gz
-
-            cd toBackup/minecraft
-          else
-            mkdir -p /mnt/globalData/toBackup/minecraft
-            cd /mnt/globalData/toBackup/minecraft
-            wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
-          fi
-          docker compose up -d >/dev/null 2>&1 &
-
-          echo -e '\n====== Setting up website backend server ======\n'
-
-          cd /mnt/globalData/CeciliaKelley33Mm.github.io-main/backend
+          docker compose up -d &
+      - name: Setup website backend server
+        working-directory: /mnt/globalData/CeciliaKelley33Mm.github.io-main/backend
+        run: |
           npm i
-          node index.js & # theres not too much junk that gets printed out
-
-          echo -e '\n====== Setting up Pool Kit ======\n'
-          
+          node index.js &
+      - name: Setup Pool Kit
+        run: |
           curl -O https://pagekite.net/pk/pagekite.py
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/.pagekite.rc
           cp .pagekite.rc ~
           sed -i 's*KITENAMEPK*${{ secrets.KITENAME }}*g' ~/.pagekite.rc
           sed -i 's*KITESECRETPK*${{ secrets.KITESECRET }}*g' ~/.pagekite.rc
-          python pagekite.py >/dev/null 2>&1 &
-
-          echo -e '\n====== Setting up and running the long-lived process ======\n'
-
-          cd /mnt/globalData
-
+          python pagekite.py &
+      - name: Run the long-lived process
+        working-directory: /mnt/globalData
+        run: |
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/checkTime.js
 
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/loop.sh
           chmod +x loop.sh
+
           bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master global $WEBHOOK_URL true ${{ inputs.oldTailscaleHostname }}
