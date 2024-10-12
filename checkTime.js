@@ -1,3 +1,4 @@
+const { match } = require('assert')
 const process = require('process')
 
 if (process.argv.length < 3) {
@@ -31,5 +32,8 @@ if (currentTime.getTime() === targetTime.getTime()) {
     console.log('[checkTime] time matches, now exiting with status 0 to make another runtime')
     process.exit(0)
 } else {
+    console.log('[checkTime] time doesn\'t match')
+    console.log(`currentTime is ${currentTime}`)
+    console.log(`targetTiem is ${targetTime}`)
     process.exit(1)
 }
