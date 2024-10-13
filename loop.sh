@@ -60,8 +60,6 @@ requestWebhook() {
 }
 
 check() {
-    # checkTime.js adds the start time by 5 hours
-
     node checkTime.js $START_TIME
     exitCode=$?
 

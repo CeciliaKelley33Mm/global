@@ -3,7 +3,7 @@ const [startDate, startMonth, startYear, startHours, startMinutes] = startTimeSt
 
 const targetTime = new Date()
 targetTime.setUTCFullYear(startYear, startMonth - 1, startDate)
-targetTime.setUTCHours(startHours + 5, startMinutes, 0, 0)
+targetTime.setUTCHours(startHours + 5, startMinutes + 30, 0, 0)
 
 const currentTime = new Date()
 currentTime.setUTCSeconds(0) // we don't want precise time
