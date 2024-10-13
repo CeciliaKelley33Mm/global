@@ -83,6 +83,12 @@ check() {
 
         if [[ "$IS_GLOBAL" == "true" ]]; then
             command+="-f \"inputs[oldTailscaleHostname]=$hostname\""
+
+            cd /mnt/globalData/toBackup
+
+            if [ -f postruntime.sh ]; then
+                . postruntime.sh
+            fi
         
             cd /mnt/globalData/toBackup/minecraft
 

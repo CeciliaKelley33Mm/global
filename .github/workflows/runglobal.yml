@@ -117,6 +117,12 @@ jobs:
           sed -i 's*KITENAMEPK*${{ secrets.KITENAME }}*g' ~/.pagekite.rc
           sed -i 's*KITESECRETPK*${{ secrets.KITESECRET }}*g' ~/.pagekite.rc
           python pagekite.py &
+      - name: Run post-install script (if exists)
+        working-directory: /mnt/globalData/toBackup
+        run: |
+          if [ -f postinstall.sh ]; then
+            . postinstall.sh
+          fi
       - name: Run the long-lived process
         working-directory: /mnt/globalData
         run: |
