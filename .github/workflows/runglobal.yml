@@ -59,8 +59,6 @@ jobs:
         run: |
           sudo mkdir /mnt/globalData
           sudo chown $(whoami) /mnt/globalData/
-
-          mkdir /mnt/globalData/toBackup
       - name: Dump GitHub token, GitHub context and other environment variables to the home directory (useful for debugging purposes)
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
