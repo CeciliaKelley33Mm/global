@@ -17,11 +17,7 @@ on:
 permissions: write-all
 
 env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
-  CHANGE_COMMAND_USERNAME: ${{ secrets.CHANGE_COMMAND_USERNAME }}
-  CHANGE_COMMAND_PASSWORD: ${{ secrets.CHANGE_COMMAND_PASSWORD }}
-
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}\
 jobs:
   custom:
     runs-on: ubuntu-24.04
