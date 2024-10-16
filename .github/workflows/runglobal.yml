@@ -29,11 +29,6 @@ jobs:
       - name: Setup Python (for use with Pool Kit)
         uses: actions/setup-python@v5
         with:
-          # pagekite doesn't work with >=3.12
-
-          # the version that pagekite said in the docs was 2.7
-          # but since setup-python removed 2.7 i had to use 3.11,
-          # which surprisingly works
           python-version: '3.11'
       - name: Setup Java 21 (Eclipse Temurin)
         uses: actions/setup-java@v4
@@ -43,7 +38,7 @@ jobs:
       - name: Installs some stuff
         run: |
           sudo apt update -y
-          sudo apt install git wget docker-compose mosh -y
+          sudo apt install mosh -y
 
           wget -O /tmp/mega.deb https://mega.nz/linux/repo/xUbuntu_24.04/amd64/megacmd-xUbuntu_24.04_amd64.deb
           sudo apt install -y "/tmp/mega.deb"
@@ -66,12 +61,6 @@ jobs:
         run: |
           sudo mkdir /mnt/globalData
           sudo chown $(whoami) /mnt/globalData/
-      - name: Clone the website repo to run the backend server
-        working-directory: /mnt/globalData
-        run: |
-          wget -O archive.zip https://codeload.github.com/CeciliaKelley33Mm/CeciliaKelley33Mm.github.io/zip/refs/heads/main
-          unzip archive.zip
-          rm -rf archive.zip
       - name: Dump GitHub token, GitHub context and other environment variables to the home directory (useful for debugging purposes)
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
@@ -88,45 +77,11 @@ jobs:
 
           tar xf archive.tar.gz
           rm -rf archive.tar.gz
-      - name: Make new Minecraft Server files if on new runtime
-        if: ${{ inputs.oldTailscaleHostname == '' }}
-        run: |
-          mkdir -p /mnt/globalData/toBackup/minecraft
-          cd /mnt/globalData/toBackup/minecraft
-          wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/minecraft-compose.yml
-      - name: Start Minecraft Server
-        working-directory: /mnt/globalData/toBackup/minecraft
-        run: docker compose up -d &
-      - name: Setup MUSE
-        run: |
-          mkdir /mnt/globalData/muse
-          cd /mnt/globalData/muse
-
-          wget -O docker-compose.yml https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/muse-compose.yml
-          sed -i 's/DISCORD_TOKEN_PLACEHOLDER/${{ secrets.DISCORD_TOKEN }}/g' docker-compose.yml
-          sed -i 's/YOUTUBE_API_KEY_PLACEHOLDER/${{ secrets.YOUTUBE_API_KEY }}/g' docker-compose.yml
-          sed -i 's/SPOTIFY_CLIENT_ID_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_ID }}/g' docker-compose.yml
-          sed -i 's/SPOTIFY_CLIENT_SECRET_PLACEHOLDER/${{ secrets.SPOTIFY_CLIENT_SECRET }}/g' docker-compose.yml
-
-          docker compose up -d &
-      - name: Setup website backend server
-        working-directory: /mnt/globalData/CeciliaKelley33Mm.github.io-main/backend
-        run: |
-          npm i
-          node index.js &
-      - name: Setup Pool Kit
-        run: |
-          curl -O https://pagekite.net/pk/pagekite.py
-          wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/.pagekite.rc
-          cp .pagekite.rc ~
-          sed -i 's*KITENAMEPK*${{ secrets.KITENAME }}*g' ~/.pagekite.rc
-          sed -i 's*KITESECRETPK*${{ secrets.KITESECRET }}*g' ~/.pagekite.rc
-          python pagekite.py &
       - name: Run post-install script (if exists)
         working-directory: /mnt/globalData/toBackup
         run: |
           if [ -f postinstall.sh ]; then
-            . postinstall.sh
+            . postinstall.sh &
           fi
       - name: Run the long-lived process
         working-directory: /mnt/globalData

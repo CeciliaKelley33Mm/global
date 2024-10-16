@@ -87,29 +87,9 @@ check() {
             if [ -f postruntime.sh ]; then
                 . postruntime.sh
             fi
-        
-            cd /mnt/globalData/toBackup/minecraft
-
-            timeLeft=30
-
-            while [ $timeLeft -gt 0 ]; do
-                if [ $(($timeLeft % 10)) -eq 0 ]; then
-                    docker compose exec minecraft rcon-cli broadcast The server will stop and move to a new host in $timeLeft seconds. Please leave the server.
-                fi
-                
-                sleep 1
-
-                timeLeft=$((timeLeft - 1))
-            done
-
-            # not stopping the server would cause problems
-            # like new world files not getting written
-            # or even file corruptions
-            docker compose down
 
             cd /mnt/globalData
 
-            # sudo is necessary because we run minecraft in a docker container
             sudo tar cf archive.tar.gz toBackup/
 
             serve -p 5000 &
