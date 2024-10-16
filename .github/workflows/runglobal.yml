@@ -17,7 +17,9 @@ on:
 permissions: write-all
 
 env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}\
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+
 jobs:
   custom:
     runs-on: ubuntu-24.04
