@@ -10,8 +10,8 @@ During the first runtime, a data directory named `globalData` is created in `/mn
 
 There's also another folder called `toBackup` inside `globalData`. Files in this folder will persist across the runtimes. It also contains these two scripts:  
 
-- `postinstall.sh` – runs after the runtime finishes setting things up.  
-- `postruntime.sh` – executes 30 minutes before the runtime stops (which has a maximum limit of 6 hours).  
+- `postinstall.sh` - runs after the runtime finishes setting things up.  
+- `postruntime.sh` - executes 30 minutes before the runtime stops (which has a maximum limit of 6 hours).  
 
 You can configure tasks that you want to start or stop at each runtime.
 
