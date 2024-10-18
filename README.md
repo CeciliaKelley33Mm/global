@@ -8,7 +8,7 @@ This repository transforms GitHub Actions into a (12 * 2)/(3.5 * 2) free s36v36 
 
 During the first runtime, a data directory named `globalData` is created in `/mnt/`, which is [Azure's temporary storage partition](https://learn.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview#temporary-disk). This partition is used for storing the swap file by default, but also offers a lot of space for storing large files. You can store the stuff that you don't want to keep throughout the runtimes inside that folder.
 
-There's also another folder called `toBackup` inside `globalData`. Files in this folder will persist across the runtimes. It also contains these two scripts:  
+There's also another folder called `toBackup` inside `globalData`. Files in this folder will persist across the runtimes. You can also create these 2 scripts inside the directory and it will run at the following time periods:
 
 - `postinstall.sh` - runs after the runtime finishes setting things up.  
 - `postruntime.sh` - executes 30 minutes before the runtime stops (which has a maximum limit of 6 hours).  
