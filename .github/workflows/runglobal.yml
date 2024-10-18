@@ -24,11 +24,11 @@ jobs:
   custom:
     runs-on: ubuntu-24.04
     steps:
-      - name: Setup Python (for use with Pool Kit)
+      - name: Setup Python (for use with Page flying on a Kite)
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Setup Java 21 (Eclipse Temurin)
+      - name: Setup Java 21 (Eclipse Temurin) // !!! broken, does nothing
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -44,18 +44,20 @@ jobs:
           curl -fsSL https://tailscale.com/install.sh | sh
 
           npm install -g serve
-      - name: Change Rabbit Word
+      - name: Change Security Word
         run: echo "$(whoami):password1!" | sudo chpasswd
-      - name: Start Mooming on a Scale
+      - name: Start the scale to measure the weight of this server
         run: sudo tailscale up --hostname="$(if ${{ inputs.runNext }}; then echo global; else echo manual-global-$(TZ=Asia/Tokyo date +%H-%M-%S); fi)" --advertise-exit-node --ssh --authkey ${{ secrets.TAILSCALE_KEY }}
       - name: Fix the PS having no colors
+        # the problem is actually the bash_profile on runner's home
+        # but i was too lazy and simply did this (works too)
         run: |
           sed -i 's/unset .*//g' $HOME/.bashrc
           sed -i 's/#force_color_prompt/force_color_prompt/g' $HOME/.bashrc
           echo 'source $HOME/.bashrc' | sudo tee -a /etc/profile
       - name: Kill something :D
         run: sudo pkill provjobd
-      - name: Create the global data directory
+      - name: Create the global data directory and set permissions
         run: |
           sudo mkdir /mnt/globalData
           sudo chown $(whoami) /mnt/globalData/
@@ -89,4 +91,5 @@ jobs:
           wget https://raw.githubusercontent.com/CeciliaKelley33Mm/global/refs/heads/master/loop.sh
           chmod +x loop.sh
 
+          # what an argument mess
           bash loop.sh ${{ inputs.runNext }} $GH_TOKEN global runglobal.yml master global $WEBHOOK_URL true ${{ inputs.oldTailscaleHostname }}
