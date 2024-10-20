@@ -78,10 +78,10 @@ jobs:
           tar xf archive.tar.gz
           rm -rf archive.tar.gz
       - name: Run post-install script (if exists)
-        working-directory: /mnt/globalData/toBackup
+        working-directory: /mnt/globalData
         run: |
-          if [ -f postinstall.sh ]; then
-            . postinstall.sh &
+          if [ -f toBackup/postinstall.sh ]; then
+            . toBackup/postinstall.sh &
           fi
       - name: Run the long-lived process
         working-directory: /mnt/globalData
